@@ -7,15 +7,48 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 import io
 
-# Set page config
+# Configure Streamlit page and meta info
 st.set_page_config(
     page_title="TV Advertising Analysis",
     page_icon="📊",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
+    menu_items={
+        'Get Help': 'https://github.com/hoang-nguyen-vu',
+        'Report a bug': "https://github.com/hoang-nguyen-vu/issues",
+        'About': """
+        ## TV Advertising Analysis App
+        
+        This application analyzes the relationship between TV advertising budgets and sales using Simple Linear Regression.
+        
+        ### Features:
+        - Interactive Data Exploration
+        - Detailed Statistical Analysis
+        - Real-time Model Training
+        
+        ### Tech Stack:
+        - Python 3.8+
+        - Streamlit
+        - Pandas
+        - NumPy
+        - Plotly
+        - Scikit-learn
+        
+        ### Meta Information:
+        - Author: Hoang-Nguyen Vu
+        - Version: 1.0.0
+        - Description: Analyze the relationship between TV advertising budgets and sales
+        - Keywords: TV Advertising, Sales Analysis, Linear Regression, Data Science
+        - Language: English
+        - Theme Color: #ff4b4b
+        - Application Type: Web Analytics Tool
+        - License: MIT
+        """
+    }
 )
 
-# Custom CSS
+
+# Custom CSS with additional styling
 st.markdown("""
     <style>
         .main {
@@ -28,9 +61,12 @@ st.markdown("""
             border: none;
             padding: 0.5rem 1rem;
             border-radius: 0.3rem;
+            transition: all 0.3s ease;
         }
         .stButton>button:hover {
             background-color: #ff3333;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
         .css-1d391kg {
             padding: 1rem;
@@ -38,6 +74,7 @@ st.markdown("""
         h1 {
             color: #ff4b4b;
             padding-bottom: 2rem;
+            text-align: center;
         }
         h2 {
             color: #ff4b4b;
@@ -53,12 +90,50 @@ st.markdown("""
         .stTabs [data-baseweb="tab"] {
             padding: 0.5rem 2rem;
             background-color: #f0f2f6;
+            transition: all 0.3s ease;
         }
         .stTabs [aria-selected="true"] {
             background-color: #ff4b4b;
             color: white;
+            transform: translateY(-2px);
+        }
+        /* Card hover effects */
+        div[data-testid="stHorizontalBlock"] > div {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        div[data-testid="stHorizontalBlock"] > div:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        /* Expander styling */
+        .streamlit-expanderHeader {
+            background-color: #f0f2f6;
+            border-radius: 0.5rem;
+        }
+        .streamlit-expanderHeader:hover {
+            background-color: #e8eaed;
+        }
+        /* Footer styling */
+        footer {
+            visibility: hidden;
+        }
+        /* Custom footer */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #f0f2f6;
+            padding: 1rem;
+            text-align: center;
+            font-size: 0.8rem;
         }
     </style>
+    
+    <!-- Add custom footer -->
+    <div class="footer">
+        Made with ❤️ by Hoang-Nguyen Vu | © 2024 All rights reserved
+    </div>
 """, unsafe_allow_html=True)
 
 # Load data
@@ -107,6 +182,10 @@ class SimpleLinearRegression:
 
 # Load data
 data = load_data()
+
+# Prepare data for model training
+X = data['TV'].values
+y = data['Sales'].values
 
 # Sidebar styling and content
 with st.sidebar:
@@ -295,14 +374,8 @@ else:  # Model Training
             n_epochs = st.number_input("Number of Epochs", 10, 1000, 100,
                                      help="Number of complete passes through the training dataset")
     
-    # Prepare data
-    X = data['TV'].values
-    y = data['Sales'].values
-    
-    # Split data
+    # Split and scale data when parameters change
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42)
-    
-    # Scale features
     scaler = StandardScaler()
     X_train_scaled = scaler.fit_transform(X_train.reshape(-1, 1)).flatten()
     X_test_scaled = scaler.transform(X_test.reshape(-1, 1)).flatten()
